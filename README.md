@@ -5,7 +5,7 @@
 **MapGenerator** is a professional Python tool to generate and export a map of France showing population densities by municipality (commune), using official INSEE and administrative boundaries data.
 
 ## Features
-- Reads French municipality boundaries (GeoJSON) and population data (Excel, INSEE format)
+- Reads French municipality boundaries (JSON) and population data (Excel)
 - Handles Paris as a single commune by aggregating arrondissement data if needed
 - Computes population density (inhabitants/km²) for each municipality
 - Classifies density into 5 custom bins: 0–15, 15–30, 30–50, 50–100, 100+ hab/km²
