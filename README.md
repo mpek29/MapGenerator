@@ -1,1 +1,1 @@
-# ChartGenerator
+# MapGenerator
