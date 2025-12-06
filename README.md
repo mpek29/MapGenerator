@@ -25,7 +25,9 @@ pip install -r requirements.txt
 
 Below is an example of the generated map:
 
-![Population Density Map](france_density_map_20251206_104131.png)
+| Population Density Map | Population density threshold map |
+|--------------|---------------|-------|
+| <img src="france_density_map_20251206_111345.png"> | <img src="france_density_threshold_map_20251206_111351.png"> |
 
 ## Usage
 

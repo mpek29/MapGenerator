@@ -62,6 +62,7 @@ def compute_density(gdf: gpd.GeoDataFrame, pop_col: str) -> gpd.GeoDataFrame:
     return gdf
 
 
+
 def plot_density_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: bool = True):
     """Plot and optionally export the density map as PNG."""
     red_palette = ListedColormap(['#fff5f0', '#fcbba1', '#fc9272', '#de2d26', '#a50f15'])
@@ -85,25 +86,60 @@ def plot_density_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: bool 
     plt.close(fig)
 
 
+def plot_threshold_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: bool = True, threshold: float = 100.0):
+    """Plot a thresholded map: only municipalities with density >= threshold in red (#DE2D26), others fully transparent."""
+    import matplotlib.colors as mcolors
+    # Filter for density >= threshold
+    mask = gdf['density'] >= threshold
+    gdf_red = gdf[mask]
+    fig, ax = plt.subplots(1, 1, figsize=(12, 12))
+    # Plot only the red municipalities
+    if not gdf_red.empty:
+        gdf_red.plot(
+            ax=ax,
+            color='#de2d26',
+            linewidth=0,
+            edgecolor='none'
+        )
+    # Remove axis and background
+    ax.set_facecolor('none')
+    plt.title(f'Thresholded Population Density (>= {threshold} hab/km² in red)')
+    plt.axis('off')
+    plt.tight_layout()
+    if output_path:
+        plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
+    if show:
+        plt.show()
+    plt.close(fig)
+
+
 def export_map_filename(prefix: str = 'france_density_map') -> str:
     """Generate a timestamped filename for map export."""
     now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     return f"{prefix}_{now}.png"
 
 
+
 def main(communes_path: str, pop_path: str, export: bool = True):
-    """Main workflow for generating and exporting the map."""
+    """Main workflow for generating and exporting both maps."""
     gdf, pop = load_data(communes_path, pop_path)
     insee_gdf_col, insee_pop_col, pop_col = detect_columns(gdf, pop)
     pop = add_paris_if_needed(pop, insee_pop_col, pop_col)
     gdf = merge_data(gdf, pop, insee_gdf_col, insee_pop_col)
     gdf = compute_density(gdf, pop_col)
-    output_path = None
+    output_path1 = None
+    output_path2 = None
     if export:
-        output_path = export_map_filename()
-    plot_density_map(gdf, output_path=output_path, show=True)
+        output_path1 = export_map_filename(prefix='france_density_map')
+        output_path2 = export_map_filename(prefix='france_density_threshold_map')
+    # First chart: full density map
+    plot_density_map(gdf, output_path=output_path1, show=True)
     if export:
-        print(f"Map exported to {output_path}")
+        print(f"Map exported to {output_path1}")
+    # Second chart: thresholded map
+    plot_threshold_map(gdf, output_path=output_path2, show=True, threshold=100.0)
+    if export:
+        print(f"Thresholded map exported to {output_path2}")
 
 if __name__ == "__main__":
     main('communes.json', 'POPULATION_MUNICIPALE_COMMUNES_FRANCE.xlsx')
