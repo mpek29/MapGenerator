@@ -2,3 +2,5 @@ geopandas
 matplotlib
 pandas
 openpyxl
+scipy
+opencv-python

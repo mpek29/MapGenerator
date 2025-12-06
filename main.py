@@ -23,7 +23,15 @@ if __name__ == "__main__":
     plot_density_map(gdf, output_path=output_path1, show=False)
     print(f"Map exported to {output_path1}")
 
-    # Second chart: thresholded map
+    # Second chart: thresholded map with morphology closing
     output_path2 = export_map_filename(prefix='france_density_threshold_map')
-    plot_threshold_map(gdf, output_path=output_path2, show=False, threshold=1500.0)
+    plot_threshold_map(
+        gdf,
+        output_path=output_path2,
+        show=False,
+        threshold=1500.0,
+        closing=True,  # Enable morphology closing
+        closing_structure=None,  # Default 3x3 square
+        closing_iterations=1     # Number of iterations
+    )
     print(f"Thresholded map exported to {output_path2}")

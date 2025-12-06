@@ -2,6 +2,11 @@
 # MapGenerator
 ![Main Preview](assets/img/main.png)
 
+
+**Main Project Goal**
+
+The main objective of this project is to localize a small number of major cities in France (7–9), chosen so that they are few enough to be easily memorized. The idea is to divide France into 7–9 areas, each dominated by one of these key cities, with the goal that each area contains roughly the same amount of population and wealth. This approach aims to split and rebalance the country's population and economic activity, which is currently too concentrated in Paris, by promoting a more even distribution across the territory.
+
 **MapGenerator** is a professional Python tool to generate and export a map of France showing population densities by municipality (commune), using official INSEE and administrative boundaries data.
 
 ## Features
@@ -25,9 +30,9 @@ pip install -r requirements.txt
 
 Below is an example of the generated map:
 
-| Population Density Map | Population density threshold map |
-|--------------|---------------|
-| <img src="france_density_map_20251206_111345.png"> | <img src="france_density_threshold_map_20251206_111351.png"> |
+| Population Density Map | Population density threshold map | Reparition map |
+|--------------|---------------|-------|
+| <img src="france_density_map_20251206_111345.png"> | <img src="france_density_threshold_map_20251206_111351.png"> | src="france_repartition_map.png"> |
 
 ## Usage
 

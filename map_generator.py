@@ -86,14 +86,41 @@ def plot_density_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: bool 
     plt.close(fig)
 
 
-def plot_threshold_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: bool = True, threshold: float = 100.0):
-    """Plot a thresholded map: only municipalities with density >= threshold in red (#DE2D26), others fully transparent."""
+def plot_threshold_map(
+    gdf: gpd.GeoDataFrame,
+    output_path: str = None,
+    show: bool = True,
+    threshold: float = 100.0,
+    closing: bool = False,
+    closing_structure=None,
+    closing_iterations: int = 1
+):
+    """
+    Plot a thresholded map: only municipalities with density >= threshold in red (#DE2D26), others fully transparent.
+    Optionally apply morphological closing to the mask.
+    Parameters:
+        closing: whether to apply morphology closing
+        closing_structure: structuring element (default: None, uses 3x3 square)
+        closing_iterations: number of closing iterations
+    """
     import matplotlib.colors as mcolors
-    # Filter for density >= threshold
     mask = gdf['density'] >= threshold
+    if closing:
+        import cv2 as cv
+        # Convert mask to uint8 image (1 for True, 0 for False)
+        mask_img = mask.values.astype(np.uint8)
+        # Use default kernel if not provided
+        if closing_structure is None:
+            kernel = np.ones((3, 1), np.uint8)  # 1D mask, so vertical kernel
+        else:
+            kernel = closing_structure
+        # Apply closing operation
+        for _ in range(closing_iterations):
+            mask_img = cv.morphologyEx(mask_img, cv.MORPH_CLOSE, kernel)
+        # Convert back to boolean mask (flatten to 1D)
+        mask = pd.Series(mask_img.ravel().astype(bool), index=gdf.index)
     gdf_red = gdf[mask]
     fig, ax = plt.subplots(1, 1, figsize=(12, 12))
-    # Plot only the red municipalities
     if not gdf_red.empty:
         gdf_red.plot(
             ax=ax,
@@ -101,16 +128,36 @@ def plot_threshold_map(gdf: gpd.GeoDataFrame, output_path: str = None, show: boo
             linewidth=0,
             edgecolor='none'
         )
-    # Remove axis and background
     ax.set_facecolor('none')
     plt.title(f'Thresholded Population Density (>= {threshold} hab/km² in red)')
     plt.axis('off')
     plt.tight_layout()
+    import tempfile
     if output_path:
-        plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
+        # Sauvegarder dans un fichier temporaire
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            tmp_path = tmp.name
+        plt.savefig(tmp_path, dpi=300, bbox_inches='tight', transparent=True)
+        plt.close(fig)
+        if closing:
+            import cv2 as cv
+            img = cv.imread(tmp_path, cv.IMREAD_UNCHANGED)
+            if closing_structure is None:
+                kernel = np.ones((18, 18), np.uint8)
+            else:
+                kernel = closing_structure
+            for _ in range(closing_iterations):
+                img = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
+            cv.imwrite(output_path, img)
+            os.remove(tmp_path)
+        else:
+            # Déplacer l'image temporaire vers output_path
+            import shutil
+            shutil.move(tmp_path, output_path)
+    else:
+        plt.close(fig)
     if show:
         plt.show()
-    plt.close(fig)
 
 
 def export_map_filename(prefix: str = 'france_density_map') -> str:
