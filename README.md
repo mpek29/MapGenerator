@@ -52,6 +52,5 @@ The map will be displayed and automatically exported as a PNG file (e.g. `france
 - You can adjust the density bins or color palette in `map_generator.py`.
 - The export filename is timestamped for easy versioning.
 
-## License
-
-MIT License
+## 🌟 License
+This project is open-source. Feel free to use, modify, and contribute! 🚀
