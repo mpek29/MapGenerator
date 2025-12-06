@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 Below is an example of the generated map:
 
-| Population Density Map | Population density threshold map | Reparition map |
+| Population Density Map | Population density threshold map | Repartition map |
 |--------------|---------------|-------|
 | <img src="france_density_map.png"> | <img src="france_density_threshold_map.png"> | <img src="france_repartition_map.png"> |
 
